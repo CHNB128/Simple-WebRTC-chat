@@ -1,9 +1,19 @@
 <template>
   <div>
-    <input @change="create" type="text"/>
-    <input v-model="id2" type="text"/>
+    <div>
+      <input @change="create" type="text" />
+      <label for>id</label>
+    </div>
+    <div>
+      <input v-model="id2" type="text" />
+      <label for>friend id</label>
+    </div>
     <button @click="connect">conn</button>
-    <input @change="send" type="text"/>
+    <div>
+      <input v-model="message" type="text" />
+      <label for>message</label>
+    </div>
+    <button @click="send">send</button>
     <div id="log">
       <div v-for="m in messages" :key="m">{{m}}</div>
     </div>
@@ -18,6 +28,7 @@ export default {
       peer: null,
       conn: null,
       id2: "",
+      message: "",
       messages: []
     };
   },
@@ -32,14 +43,15 @@ export default {
       });
     },
     send(e) {
-      const msg = e.target.value;
-      this.conn.send(this.peer.id + msg);
+      let msg = `@${this.peer.id}: ${this.message}`;
+      this.messages.push(msg);
+      this.conn.send(msg);
     },
     connect(e) {
       const id = e.target.value;
       this.conn = this.peer.connect(this.id2);
       this.conn.on("open", () => {
-        this.conn.send("hi!");
+        this.conn.send(`@${this.peer.id}: connected.`);
       });
     }
   }
